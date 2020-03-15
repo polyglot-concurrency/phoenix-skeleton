@@ -1,0 +1,72 @@
+---
+
+- name: Provision Python
+  hosts: all
+  gather_facts: no
+  vars:
+    ansible_distribution: "{{ lookup('env','ANSIBLE_DISTRIBUTION') }}"
+    app_tar_gz_file: "{{ lookup('env','APP_TAR_GZ_FILE') }}"
+
+  tasks:
+    - name: Boostrap Python Debian
+      raw: apt-get -y update && apt-get install -y python-minimal
+      when:
+        - ansible_distribution | lower == "debian"
+
+    - name: Boostrap Python CentOS
+      raw: yum -y install epel-release && yum -y update
+      when:
+        - ansible_distribution | lower == "centos"
+
+- name: Provision Elixir
+  hosts: all
+  vars:
+    ansible_distribution: "{{ lookup('env','ANSIBLE_DISTRIBUTION') }}"
+    app_tar_gz_file: "{{ lookup('env','APP_TAR_GZ_FILE') }}"
+
+  tasks:
+    - name: "Creates directory: /etc/services.d/elixir-app"
+      file:
+        path: /etc/services.d/elixir-app
+        state: directory
+
+    - name: Putting /etc/services.d/elixir-app/run
+      copy:
+        src: files/services.d/elixir-app/run
+        dest: /etc/services.d/elixir-app/run
+        owner: root
+        group: root
+        mode: u=rx,g=rx,o=rx
+
+    - name: Putting /usr/bin/elixir-app.sh
+      copy:
+        src: files/scripts/elixir-app.sh
+        dest: /usr/bin/elixir-app.sh
+        owner: root
+        group: root
+        mode: u=rx,g=rx,o=rx
+
+    - name: Putting /usr/bin/remote
+      copy:
+        src: files/scripts/remote
+        dest: /usr/bin/remote
+        owner: root
+        group: root
+        mode: u=rx,g=rx,o=rx
+
+    - name: "Creates directory: /opt/elixir-app"
+      file:
+        path: /opt/elixir-app
+        state: directory
+        owner: root
+        group: root
+
+    - name: Putting app files
+      unarchive:
+        src: "files/app/{{ app_tar_gz_file }}"
+        dest: /opt/elixir-app
+        owner: root
+        group: root
+
+#    - name: setcap CAP_NET_BIND_SERVICE=+eip
+#      raw: "setcap CAP_NET_BIND_SERVICE=+eip /home/app/elixir-app/erts-10.6/bin/beam.smp"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+#export MIX_ENV=dev && envconsul -log-level=err -consul-addr=172.17.0.2:8500 -prefix common- \
+# -exec-kill-signal=SIGTERM -exec-kill-timeout=10m iex -S mix phx.server
+
+export MIX_ENV=dev && envconsul -log-level=err -consul-addr=172.17.0.2:8500 -prefix common- \
+ -exec-kill-signal=SIGTERM -exec-kill-timeout=10m iex --name "api@172.17.0.$1" --cookie secret --no-halt -S mix phx.server
+
+#-log-level=<level>
+#      Set the logging level - values are "debug", "info", "warn", and "err"
+
+#export MIX_ENV=dev && envconsul -log-level=err -consul-addr=172.17.0.2:8500 -prefix common- \
+# -exec-kill-signal=SIGTERM -exec-kill-timeout=10m elixir --name "chat@172.17.0.$1" --cookie secret --no-halt -S mix phx.server
