@@ -89,12 +89,6 @@ defmodule Api.MixProject do
 
     File.copy!("cli/cfg_files/erl_inetrc", "#{rel.path}/releases/erl_inetrc")
 
-    # This one is not packaged in the .tar file
-    File.copy!("README.md", "#{rel.path}/README.md")
-    File.copy!(
-      "README.md",
-      "#{rel.path}/releases/#{release_version(System.get_env("RELEASE_TAR_NAME_SUFFIX"))}/README.md"
-    )
     File.copy!(
       "config/prod.exs",
       "#{rel.path}/releases/#{release_version(System.get_env("RELEASE_TAR_NAME_SUFFIX"))}/releases.exs"
